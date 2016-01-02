@@ -1,0 +1,26 @@
+{
+  "name": "json-patch-gen",
+  "version": "1.0.2",
+  "description": "JavaScript library that generates JSON patches (RFC 6902)",
+  "homepage": "https://github.com/gregsexton/json-patch-gen",
+  "bugs": "https://github.com/gregsexton/json-patch-gen/issues",
+  "main": "./lib/diff.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "json-patch",
+    "diff",
+    "rfc 6902",
+    "generate"
+  ],
+  "author": "Greg Sexton",
+  "license": "Apache 2.0",
+  "devDependencies": {
+    "chai": "^1.10.0",
+    "jsonpatch": "^1.0.1",
+    "jsverify": "^0.4.5",
+    "mocha": "^2.0.1",
+    "underscore": "^1.7.0"
+  }
+}

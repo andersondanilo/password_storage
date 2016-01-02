@@ -1,0 +1,14 @@
+{
+  "name": "json-patch-gen",
+  "homepage": "https://github.com/gregsexton/json-patch-gen",
+  "version": "1.0.2",
+  "_release": "1.0.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "1.0.2",
+    "commit": "be451349721bc49f8df5d8958748e22780c6fd47"
+  },
+  "_source": "git://github.com/gregsexton/json-patch-gen.git",
+  "_target": "~1.0.2",
+  "_originalSource": "json-patch-gen"
+}

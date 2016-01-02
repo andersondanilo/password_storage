@@ -1,0 +1,29 @@
+<div class="login-box" ng-controller="LoginController as login">
+  <form ng-submit="login.login()">
+    <div class="list list-inset" ng-hide="login.successMessage">
+      <label class="item item-input">
+        <input type="text" placeholder="{{'email' | i18next}}" ng-model="login.email">
+      </label>
+      <label class="item item-input">
+        <input type="password" placeholder="{{'password' | i18next}}" ng-model="login.password">
+      </label>
+    </div>
+    <div class="padding">
+      <div class="alert alert-success" ng-class="{hide: !login.successMessage}" ng-bind-html="login.successMessage"></div>
+      <div class="alert alert-danger" ng-class="{hide: !login.errorMessage}" ng-bind-html="login.errorMessage"></div>
+      <button type="submit" class="button button-balanced button-block" ng-hide="login.successMessage">
+        {{'enter' | i18next}}
+      </button>
+    </div>
+    <div class="padding">
+      <a ui-sref="default.signup">
+        {{'not_registered' | i18next}}
+        {{'do_register' | i18next}}
+      </a>
+      <br />
+      <a ui-sref="default">
+        <i class="icon ion-chevron-left"></i>{{'go_back' | i18next}}
+      </a>
+    </div>
+  </form>
+</div>

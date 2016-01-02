@@ -1,0 +1,18 @@
+<ion-pane>
+  <h1 class="main-title">
+    <i class="icon ion-android-lock"></i> Password Storage
+  </h1>
+  <div ui-view>
+    <div class="main-description"> 
+      {{'app.description' | i18next}}
+    </div>
+    <div class="main-buttons">
+      <button ui-sref="default.login" class="button button-balanced">
+        {{'do_login' | i18next}}
+      </button>
+      <button ui-sref="default.signup" class="button button-stable">
+        {{'do_register' | i18next}}
+      </button>
+    </div>
+  </div>
+</ion-pane>
