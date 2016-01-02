@@ -1,0 +1,148 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activemodel (4.2.3)
+      activesupport (= 4.2.3)
+      builder (~> 3.1)
+    activesupport (4.2.3)
+      i18n (~> 0.7)
+      json (~> 1.7, >= 1.7.7)
+      minitest (~> 5.1)
+      thread_safe (~> 0.3, >= 0.3.4)
+      tzinfo (~> 1.1)
+    attr_required (1.0.0)
+    axiom-types (0.1.1)
+      descendants_tracker (~> 0.0.4)
+      ice_nine (~> 0.11.0)
+      thread_safe (~> 0.3, >= 0.3.1)
+    bcrypt (3.1.10)
+    bson (3.1.2)
+    builder (3.2.2)
+    celluloid (0.16.0)
+      timers (~> 4.0.0)
+    coercible (1.0.0)
+      descendants_tracker (~> 0.0.1)
+    connection_pool (2.2.0)
+    descendants_tracker (0.0.4)
+      thread_safe (~> 0.3, >= 0.3.1)
+    diff-lcs (1.2.5)
+    dry-configurable (0.1.1)
+      thread_safe
+    dry-container (0.2.1)
+      dry-configurable (= 0.1.1)
+      thread_safe
+    equalizer (0.0.11)
+    factory_girl (4.5.0)
+      activesupport (>= 3.0.0)
+    ffi (1.9.10)
+    grape (0.12.0)
+      activesupport
+      builder
+      hashie (>= 2.1.0)
+      multi_json (>= 1.3.2)
+      multi_xml (>= 0.5.2)
+      rack (>= 1.3.0)
+      rack-accept
+      rack-mount
+      virtus (>= 1.0.0)
+    grape-entity (0.4.5)
+      activesupport
+      multi_json (>= 1.3.2)
+    grape-swagger (0.10.2)
+      grape (>= 0.8.0)
+      grape-entity
+    hashie (3.4.2)
+    hitimes (1.2.2)
+    httpclient (2.6.0.1)
+    i18n (0.7.0)
+    ice_nine (0.11.1)
+    json (1.8.3)
+    json-patch (1.0.0)
+    jsondiff (0.0.5)
+    listen (2.10.1)
+      celluloid (~> 0.16.0)
+      rb-fsevent (>= 0.9.3)
+      rb-inotify (>= 0.9)
+    minitest (5.7.0)
+    mongoid (4.0.2)
+      activemodel (~> 4.0)
+      moped (~> 2.0.0)
+      origin (~> 2.1)
+      tzinfo (>= 0.3.37)
+    moped (2.0.6)
+      bson (~> 3.0)
+      connection_pool (~> 2.0)
+      optionable (~> 0.2.0)
+    multi_json (1.11.2)
+    multi_xml (0.5.5)
+    optionable (0.2.0)
+    origin (2.1.1)
+    password_strength (1.0.2)
+      activemodel
+    puma (2.11.3)
+      rack (>= 1.1, < 2.0)
+    rack (1.6.4)
+    rack-accept (0.4.5)
+      rack (>= 0.4)
+    rack-cors (0.4.0)
+    rack-mount (0.8.3)
+      rack (>= 1.0.0)
+    rack-oauth2 (1.2.0)
+      activesupport (>= 2.3)
+      attr_required (>= 0.0.5)
+      httpclient (>= 2.4)
+      multi_json (>= 1.3.6)
+      rack (>= 1.1)
+    rack-test (0.6.3)
+      rack (>= 1.0)
+    rb-fsevent (0.9.5)
+    rb-inotify (0.9.5)
+      ffi (>= 0.5.0)
+    rerun (0.10.0)
+      listen (~> 2.7, >= 2.7.3)
+    rspec (3.3.0)
+      rspec-core (~> 3.3.0)
+      rspec-expectations (~> 3.3.0)
+      rspec-mocks (~> 3.3.0)
+    rspec-core (3.3.2)
+      rspec-support (~> 3.3.0)
+    rspec-expectations (3.3.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.3.0)
+    rspec-mocks (3.3.2)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.3.0)
+    rspec-support (3.3.0)
+    spork (1.0.0rc4)
+    thread_safe (0.3.5)
+    timers (4.0.1)
+      hitimes
+    tzinfo (1.2.2)
+      thread_safe (~> 0.1)
+    virtus (1.0.5)
+      axiom-types (~> 0.1)
+      coercible (~> 1.0)
+      descendants_tracker (~> 0.0, >= 0.0.3)
+      equalizer (~> 0.0, >= 0.0.9)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bcrypt
+  dry-container
+  factory_girl
+  grape
+  grape-entity
+  grape-swagger
+  json-patch
+  jsondiff
+  mongoid (~> 4.0.0)
+  password_strength
+  puma
+  rack-cors
+  rack-oauth2
+  rack-test (~> 0.6.2)
+  rerun
+  rspec (~> 3.1)
+  spork (~> 1.0rc)

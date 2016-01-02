@@ -1,0 +1,157 @@
+@import url(https://fonts.googleapis.com/css?family=Lobster);
+@import url(https://fonts.googleapis.com/css?family=Montserrat);
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat'; }
+
+a {
+  cursor: pointer; }
+
+.main-title {
+  color: #0079bf;
+  font-family: 'Lobster';
+  text-align: center;
+  padding-top: 1em;
+  font-size: 2.5em; }
+
+.bar-header .logo-text {
+  font-family: 'Lobster';
+  font-size: 1.5em;
+  line-height: 1.5em; }
+
+.main-loader {
+  text-align: center;
+  color: #0079bf;
+  padding: 3em; }
+  .main-loader svg {
+    width: 4em;
+    height: 4em;
+    stroke: #0079bf;
+    fill: #0079bf; }
+
+.main-description {
+  text-align: center;
+  font-size: 1.5em;
+  max-width: 600px;
+  padding: 2em;
+  line-height: 2em;
+  margin: 0 auto;
+  font-family: 'Montserrat'; }
+
+.main-buttons {
+  text-align: center; }
+
+.login-box a {
+  color: #999;
+  text-align: center;
+  display: block; }
+  .login-box a .icon {
+    margin-right: 0.5em; }
+
+@media (min-width: 600px) {
+  .main-title {
+    padding-top: 2em;
+    font-size: 4em; }
+  .login-box {
+    width: 500px;
+    margin: 0 auto; } }
+
+.layout-row {
+  padding: 0; }
+  .layout-row > .col {
+    height: 100vh;
+    overflow: auto;
+    position: relative; }
+
+.left-bar {
+  background-color: #0079bf; }
+  .left-bar .logo-text {
+    font-family: 'Lobster';
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    font-size: 1.8em;
+    padding: 1em 0.5em; }
+  .left-bar .list {
+    padding-bottom: 3em; }
+    .left-bar .list .item:first-child {
+      border-top: none; }
+    .left-bar .list .item {
+      background: transparent;
+      color: white;
+      border-bottom: 1px solid #0069a6;
+      border-top: 1px solid #0089d9;
+      margin-bottom: 1px; }
+    .left-bar .list a.item:hover {
+      background-color: #0083ce; }
+    .left-bar .list a.item:active {
+      background-color: #0096ed; }
+    .left-bar .list .item-divider {
+      font-weight: bold;
+      font-family: 'Montserrat'; }
+  .left-bar .menu-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0; }
+    .left-bar .menu-footer .row {
+      padding: 0; }
+      .left-bar .menu-footer .row .col {
+        padding: 0.4em;
+        text-align: center;
+        outline: 1px solid #0089d9;
+        border: 1px solid #0069a6;
+        border-top: 0;
+        color: white;
+        font-size: 1.5em;
+        background-color: #0079bf; }
+      .left-bar .menu-footer .row .col:hover {
+        background-color: #0083ce; }
+      .left-bar .menu-footer .row .col:active {
+        background-color: #0096ed; }
+
+.content-col .scroll > .pane {
+  bottom: auto;
+  padding: 1em; }
+.content-col .row-options {
+  padding: 0; }
+  .content-col .row-options .col > .list, .content-col .row-options .col > .button {
+    margin-top: 0; }
+  .content-col .row-options .col > .list {
+    margin: 0; }
+  .content-col .row-options > .col:first-child {
+    padding-left: 0; }
+  .content-col .row-options > .col:last-child {
+    padding-right: 0; }
+
+.password-list {
+  width: 100%; }
+  .password-list .password-card + .password-card {
+    margin-top: 1.5em; }
+
+.password-card {
+  margin: 0.5em 0; }
+  .password-card label {
+    font-weight: bold; }
+  .password-card .item button {
+    vertical-align: middle; }
+  .password-card .item .input-label label {
+    margin-left: 2.5em; }
+  .password-card .item input[readonly] {
+    background-color: white;
+    cursor: pointer; }
+  .password-card .tabs .tab-item {
+    font-size: 0.8em; }
+
+.item-form-information .input-label {
+  padding-top: 0;
+  padding-bottom: 0; }
+
+.col-15 {
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 0 15%;
+  -moz-box-flex: 0;
+  -moz-flex: 0 0 15%;
+  -ms-flex: 0 0 15%;
+  flex: 0 0 15%;
+  max-width: 15%; }

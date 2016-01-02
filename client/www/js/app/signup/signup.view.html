@@ -1,0 +1,40 @@
+<div class="login-box" ng-controller="SignupController as signup">
+  <form ng-submit="signup.register()">
+    <div class="list list-inset" ng-hide="signup.successMessage">
+      <label class="item item-input">
+        <input type="text" placeholder="{{'name' | i18next}}" ng-model="signup.name">
+      </label>
+      <label class="item item-input">
+        <input type="email" placeholder="{{'email' | i18next}}" ng-model="signup.email">
+      </label>
+      <label class="item item-input">
+        <input type="password" placeholder="{{'password' | i18next}}" ng-model="signup.password">
+      </label>
+      <label class="item item-input">
+        <input type="password" placeholder="{{'repeat_password' | i18next}}" ng-model="signup.repeatPassword">
+      </label>
+    </div>
+    <div class="padding">
+      <div class="alert alert-success" ng-class="{hide: !signup.successMessage}" ng-bind-html="signup.successMessage"></div>
+      <div ng-class="{hide: !signup.successMessage}">
+        <a ui-sref="default.login">
+          {{'do_login' | i18next}}
+        </a>
+      </div>
+      <div class="alert alert-danger" ng-class="{hide: !signup.errorMessage}" ng-bind-html="signup.errorMessage"></div>
+      <button type="submit" class="button button-balanced button-block" ng-hide="signup.successMessage">
+        {{'do_register' | i18next}}
+      </button>
+    </div>
+    <div class="padding" ng-hide="signup.successMessage">
+      <a ui-sref="default.login">
+        {{'already_have_registered' | i18next}}
+        {{'do_login' | i18next}}
+      </a>
+      <br />
+      <a ui-sref="default">
+        <i class="icon ion-chevron-left"></i>{{'go_back' | i18next}}
+      </a>
+    </div>
+  </form>
+</div>

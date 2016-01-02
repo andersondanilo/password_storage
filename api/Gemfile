@@ -1,0 +1,25 @@
+source 'https://rubygems.org'
+
+gem 'grape'
+gem 'grape-entity'
+gem 'dry-container'
+gem 'json-patch'
+gem 'jsondiff'
+gem 'puma'
+gem 'mongoid', '~> 4.0.0'
+gem 'rack-oauth2'
+gem 'rack-cors'
+gem 'bcrypt'
+gem 'password_strength'
+gem 'grape-swagger'
+
+group :development, :test do  
+  gem 'rerun'
+end
+
+group :test do
+  gem 'rspec', '~> 3.1'
+  gem 'rack-test', '~> 0.6.2'
+  gem 'spork', '~> 1.0rc'
+  gem 'factory_girl'
+end

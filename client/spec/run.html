@@ -1,0 +1,58 @@
+<html>
+<head>
+    <link rel="shortcut icon" type="image/png" href="../www/lib/jasmine-core/lib/jasmine-core/jasmine_favicon.png">
+    <link rel="stylesheet" type="text/css" href="../www/lib/jasmine-core/lib/jasmine-core/jasmine.css">
+
+    <script type="text/javascript">
+      TEST_ENVIRONMENT = true;
+    </script>
+
+    <script type="text/javascript" src="../www/lib/jasmine-core/lib/jasmine-core/jasmine.js"></script>
+    <script type="text/javascript" src="../www/lib/jasmine-core/lib/jasmine-core/jasmine-html.js"></script>
+    <script type="text/javascript" src="../www/lib/jasmine-core/lib/jasmine-core/boot.js"></script>
+    <script type="text/javascript" src="requests.js"></script>
+
+    <!-- load the app -->
+    <!-- ionic/angularjs js -->    
+    <script src="../www/lib/ionic/js/ionic.bundle.js"></script>
+    <script src="../www/lib/angular-mocks/angular-mocks.js"></script>
+    <script src="../www/lib/i18next/i18next.min.js"></script>
+    <script src="../www/lib/ng-i18next/dist/ng-i18next.min.js"></script>
+    <script src="../www/lib/IndexedDBShim/dist/indexeddbshim.min.js"></script>
+    <script src="../www/lib/cryptojslib/rollups/aes.js"></script>
+    <script src="../www/lib/sift.min.js"></script>
+    <!-- your app's js -->
+    <script data-main="../www/js/app" src="../www/lib/requirejs/require.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+
+        require(['app'], function(app) {
+            require(['app/config'], function() {
+                var app = angular.module('passwordStorage');
+                app.register = app.backupRegister;
+                var dependencies = [
+                    'app/services/dataService',
+                    'app/services/authService',
+                    'app/services/syncService',
+                    'app/login/login.controller'
+                ];
+                var specs = [
+                    '../../spec/services/dataServiceSpec',
+                    '../../spec/services/authServiceSpec',
+                    '../../spec/services/syncServiceSpec',
+                ];
+
+                require(dependencies, function() {
+                    require(specs, function() {
+
+                        angular.bootstrap(document.body, ["passwordStorage"]);
+                        window.onload();
+                        //jasmine.getEnv().execute();
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

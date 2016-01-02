@@ -1,0 +1,27 @@
+db:
+  image: mongo
+  ports:
+    - "27017:27017"
+  volumes:
+    - ./datadir:/data/db
+
+api:
+  build: ./api
+  ports:
+    - "9292:9292"
+  volumes:
+    - ./api:/code
+  command: "rerun puma"
+  links:
+    - db
+  environment:
+    - RACK_ENV=development
+
+web:
+  image: nginx
+  ports:
+    - "80:80"
+  volumes:
+    - ./client:/usr/share/nginx/html
+  command: nginx -g "daemon off;"
+

@@ -1,0 +1,64 @@
+<div class="row layout-row" ng-controller="DashboardController as dashboard">
+  <div class="col col-20 left-bar">
+    <ion-content>
+      <a class="logo-text" ui-sref="dashboard.overview">
+        <i class="icon ion-android-lock"></i> Password Storage
+      </a>
+      <div class="list">
+
+        <div class="item item-divider">
+          {{'dashboard.categories' | i18next}}
+        </div>
+        <div ng-repeat="category in dashboard.categories">
+          <a class="item item-icon-left" ui-sref="dashboard.category({'category': category.uuid})">
+            <i class="icon ion-ios-list"></i>
+            {{ category.name }}
+            <span class="badge badge-calm">0</span>
+          </a>
+        </div>
+
+        <a class="item item-icon-left" ui-sref="dashboard.create_category">
+          <i class="icon ion-plus"></i>
+          {{'category' | i18next}}
+        </a>
+
+        <div class="item item-divider">
+          {{'dashboard.options' | i18next}}
+        </div>
+        <a class="item item-icon-left" href="#">
+          <i class="icon ion-person"></i>
+          {{'dashboard.account_information' | i18next}}
+        </a>
+        <a class="item item-icon-left" href="#">
+          <i class="icon ion-android-time"></i>
+          {{'dashboard.access_history' | i18next}}
+        </a>
+        <a class="item item-icon-left" href="#">
+          <i class="icon ion-gear-b"></i>
+          {{'dashboard.configuration' | i18next}}
+        </a>
+
+      </div>
+    </ion-content>
+    <div class="menu-footer">
+      <div class="row">
+        <a href="#" class="col">
+          <i class="icon ion-person"></i>
+        </a>
+        <a href="#" class="col">
+          <i class="icon ion-help"></i>
+        </a>
+        <a class="col" ng-click="dashboard.logout()">
+          <i class="icon ion-power"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="col content-col">
+    <ion-content>
+      <ion-view style="height:auto;" ui-view>
+        
+      </ion-view>
+    </ion-content>
+  </div>
+</div>

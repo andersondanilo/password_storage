@@ -1,0 +1,28 @@
+<div ng-controller="FormCategoryController as formCategory">
+  <h2 ng-show="formCategory.isNew">{{'create' | i18next}} {{'category' | i18next}}</h2>
+  <h2 ng-hide="formCategory.isNew">{{'edit' | i18next}} {{'category' | i18next}}</h2>
+
+  <div ng-hide="formCategory.loaded">
+    <ion-spinner></ion-spinner>
+  </div>
+  <div ng-show="formCategory.loaded">
+    <form ng-submit="formCategory.save()">
+      <div class="list">
+        <label class="item item-input">
+          <span class="input-label">{{'title' | i18next}}</span>
+          <input type="text" ng-model="formCategory.entity.name">
+        </label>
+      </div>
+
+      <div>
+        <div class="alert alert-success" ng-class="{hide: !formCategory.successMessage}" ng-bind-html="formCategory.successMessage"></div>
+
+        <div class="alert alert-danger" ng-class="{hide: !formCategory.errorMessage}" ng-bind-html="formCategory.errorMessage"></div>
+
+        <button type="submit" class="button button-balanced button-block">
+          {{'save' | i18next}}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

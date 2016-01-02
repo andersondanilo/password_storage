@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title></title>
+
+    <link href="css/ionic.app.min.css" rel="stylesheet">
+    <link href="css/style.min.css" rel="stylesheet">
+    <link href="css/bootstrap.alert.css" rel="stylesheet">
+
+    <script type="text/javascript">
+      TEST_ENVIRONMENT = false;
+    </script>
+
+    <!-- ionic/angularjs js -->
+    <script src="lib/sift.min.js"></script>
+    <script src="lib/polyfills.js"></script>
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+    <script src="lib/i18next/i18next.min.js"></script>
+    <script src="lib/ng-i18next/dist/ng-i18next.min.js"></script>
+    <script src="lib/IndexedDBShim/dist/indexeddbshim.min.js"></script>
+    <script src="lib/cryptojslib/rollups/aes.js"></script>
+
+    <!-- cordova script (this will be a 404 during development) -->
+    <script src="cordova.js"></script>
+
+    <!-- your app's js -->
+    <script data-main="js/app" src="lib/requirejs/require.js"></script>
+  </head>
+  <body>
+    <ui-view>
+      <!-- Initial loading -->
+      <ion-pane>
+        <div class="main-loader">
+          <ion-spinner></ion-spinner>
+        </div>
+      </ion-pane>
+    </ui-view>
+  </body>
+</html>
