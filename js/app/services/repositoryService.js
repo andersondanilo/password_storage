@@ -154,13 +154,22 @@ define([], function () {
 
     function seedDatabase() {
       return $q(function(resolve, reject) {
-        byIndex('categories', 'special_idx', 'default').then(function(category) {
-          if(!category) {
-            save('categories', {
-              'name': i18n.t('dashboard.default') || 'Default',
-              'special': 'default'
-            }).then(resolve);
+        all('categories', {
+          deleted: {$not: true}
+        }).then(function(categories) {
+          if(categories.length == 0) {
+            byIndex('categories', 'special_idx', 'default').then(function(category) {
+              if(!category) {
+                save('categories', {
+                  'name': i18n.t('dashboard.default') || 'Default',
+                  'special': 'default'
+                }).then(resolve);
+              } else {
+                resolve();
+              }
+            });
           } else {
+            // already have categories
             resolve();
           }
         });
@@ -258,6 +267,13 @@ define([], function () {
                 entity.uuid = generateUUID();
                 entity._rev = null;
                 entity._sync_status = 0;
+                if(oldResource && !oldResource.deleted && entity.deleted) {
+                  if(!oldResource._rev) {
+                    // dont need to upload because dont exist on server
+                    entity._sync_status = 1;
+                  }
+                }
+                
               } else {
                 // entity downloaded from remote
                 entity._sync_status = 1;

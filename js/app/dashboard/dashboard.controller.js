@@ -13,10 +13,6 @@ define(['app/repositories/categoryRepository', 'app/services/authService'], func
     vm.logout = logout;
     vm.categories = [];
 
-    var categoryFilter = {
-      deleted: {$not: true}
-    };
-
     authService.configureSyncronize();
 
     refreshCategoriesList();
@@ -32,7 +28,7 @@ define(['app/repositories/categoryRepository', 'app/services/authService'], func
     }
 
     function refreshCategoriesList() {
-      categoryRepository.all(categoryFilter).then(function(categories) {
+      categoryRepository.actives().then(function(categories) {
         vm.categories = categories;
       });
     }

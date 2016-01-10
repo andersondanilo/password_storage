@@ -14,17 +14,18 @@ define(['app/services/apiService'], function () {
     var defaultSyncTables = {
       "categories": {
         "endpoint": "categories",
-        "attributes": ["name"],
         "relationships": {
           "passwords": {
-            "endpoint": "/categories/:category_uuid/passwords",
-            "attributes": ["title", "username", "password", "informations"]
+            "endpoint": "categories/:uuid/passwords",
+            "translate": {
+              "category_uuid": "category"
+            }
           }
         }
       }
     };
 
-    function syncronize(syncTables) {
+    function syncronize(syncTables, parentResource) {
       if(!syncTables)
         syncTables = defaultSyncTables;
 
@@ -32,13 +33,22 @@ define(['app/services/apiService'], function () {
 
       angular.forEach(syncTables, function(value, key) {
         promises.push($q(function(resolve, reject) {
-          var tablePromise = syncronizeTable(key, value["attributes"], value["endpoint"]);
-          if(("relationships" in value) && (value["relationships"].length > 0)) {
+          var tablePromise = syncronizeTable(key, value["endpoint"], parentResource, value);
+          if(("relationships" in value)) {
             tablePromise.then(function() {
-              var relationPromise = syncronize(value["relationships"]);
-              relationPromise.then(function() {
-                resolve();
-              })
+              var relationPromises = [];
+
+              repositoryService.all(key, {deleted: {$not: true}}).then(function(parentResources) {
+                angular.forEach(parentResources, function(parentResource) {
+                  relationPromises.push(syncronize(value["relationships"], parentResource));
+                });
+
+                if(relationPromises.length > 0) {
+                  $q.all(relationPromises).then(resolve);
+                } else {
+                  resolve();
+                }
+              });
             });
           } else {
             tablePromise.then(function() {
@@ -59,7 +69,7 @@ define(['app/services/apiService'], function () {
       });
     };
 
-    function syncronizeTable(tableName, attributes, endpoint) {
+    function syncronizeTable(tableName, endpoint, parentResource, options) {
       var getLocalResouces = function(query) {
         return getLocalResoucesByTable(tableName, query);
       };
@@ -104,7 +114,7 @@ define(['app/services/apiService'], function () {
       // lists all resources on remote server
       var getRemoteResources = function() {
         return $q(function(resolve, reject) {
-          apiService.doApiRequest('GET', endpoint).then(function(response) {
+          apiService.doApiRequest('GET', parseEndpoint(endpoint)).then(function(response) {
             var remoteResources = response.data;
             resolve(remoteResources);
           });
@@ -161,6 +171,126 @@ define(['app/services/apiService'], function () {
         });
       };
 
+      function executeInOrder(promisesFns) {
+        var prevPromise;
+        angular.forEach(promisesFns, function(promiseFn) {
+          if(!prevPromise) {
+            prevPromise = promiseFn();
+          } else {
+            prevPromise = prevPromise.then(promiseFn);
+          }
+        });
+        return prevPromise;
+      }
+
+      function parseEndpoint(endpoint, resource) {
+        if(parentResource) {
+          angular.forEach(parentResource, function(value, key) {
+            endpoint = endpoint.replace(':'+key, value);
+          });
+        }
+        if(resource) {
+          angular.forEach(resource, function(value, key) {
+            endpoint = endpoint.replace(':'+key, value);
+          });
+        }
+        return endpoint;
+      }
+
+      function doApiResourceUpload(method, tableName, resource, endpoint) {
+        return $q(function(resolve, reject) {
+          return apiService.doApiRequest(
+            method,
+            endpoint,
+            {
+              'data': {
+                'type': tableName,
+                'id': resource.uuid || null,
+                'attributes': resource
+              }
+            }
+          ).then(function(response) {
+            // refresh sync status
+            refreshResourceFromRemote(resource, response.data);
+            repositoryService.save(tableName, resource).then(resolve);
+          }, function(response) {
+            if(method == 'DELETE') {
+              if(response && response.status == 404) {
+                // delete can fail if resource not exists in server
+                // ex: deleted by another client
+                resolve();
+              } else {
+                reject();
+              }
+            } else {
+              reject(response);
+            }
+          });
+        });
+      }
+
+      function refreshResourceFromRemote(localResource, remoteResource) {
+        localResource._sync_status = SYNC_OK;
+        localResource._dont_change_sync_status = 1;
+
+        if(remoteResource) {
+          if('data' in remoteResource)
+            throw new Error("Invalid remote resource: with data");
+
+          if(!('attributes' in remoteResource))
+            throw new Error("Invalid remote resource: without attributes");
+
+          localResource._rev = remoteResource.attributes.rev;
+
+          if(localResource.uuid && localResource.uuid != remoteResource.attributes.uuid) {
+            throw new Error("Remote resource uuid mismatch "+localResource.uuid+" with "+remoteResource.attributes.uuid);
+          }
+
+          angular.forEach(remoteResource.attributes, function(value, key) {
+            if(key == "rev")
+              return;
+
+            var newKey = key;
+
+            if('translate' in options) {
+              if(key in options.translate) {
+                newKey = options.translate[key];
+              }
+            }
+
+            localResource[newKey] = value;
+          });
+        } else {
+          throw new Error("Invalid remote resource");
+        }
+      }
+
+      function uploadDeletedResource(tableName, resource, endpoint) {
+        return doApiResourceUpload(
+          'DELETE',
+          tableName,
+          resource,
+          parseEndpoint(endpoint, resource) + '/' + resource.uuid
+        );
+      }
+
+      function uploadNewResource(tableName, resource, endpoint) {
+        return doApiResourceUpload(
+          'POST',
+          tableName,
+          resource,
+          parseEndpoint(endpoint, resource)
+        );
+      }
+
+      function uploadUpdatedResource(tableName, resource, endpoint) {
+        return doApiResourceUpload(
+          'PATCH',
+          tableName,
+          resource,
+          parseEndpoint(endpoint, resource) + '/' + resource.uuid
+        );
+      }
 
       return executeInOrder([
         syncLocalDeleteds,
@@ -168,99 +298,6 @@ define(['app/services/apiService'], function () {
         syncLocalUpdateds,
         syncWithRemoteResources
       ]);
-    }
-
-    function executeInOrder(promisesFns) {
-      var prevPromise;
-      angular.forEach(promisesFns, function(promiseFn) {
-        if(!prevPromise) {
-          prevPromise = promiseFn();
-        } else {
-          prevPromise = prevPromise.then(promiseFn);
-        }
-      });
-      return prevPromise;
-    }
-
-    function parseEndpoint(endpoint, resource) {
-      angular.forEach(resource, function(value, key) {
-        endpoint = endpoint.replace(':'+key, value);
-      });
-      return endpoint;
-    }
-
-    function doApiResourceUpload(method, tableName, resource, endpoint) {
-      return $q(function(resolve, reject) {
-        return apiService.doApiRequest(
-          method,
-          endpoint,
-          {
-            'data': {
-              'type': tableName,
-              'id': resource.uuid || null,
-              'attributes': resource
-            }
-          }
-        ).then(function(response) {
-          // refresh sync status
-          refreshResourceFromRemote(resource, response.data);
-          repositoryService.save(tableName, resource).then(resolve);
-        }, reject);
-      });
-    }
-
-    function refreshResourceFromRemote(localResource, remoteResource) {
-      localResource._sync_status = SYNC_OK;
-      localResource._dont_change_sync_status = 1;
-
-      if(remoteResource) {
-        if('data' in remoteResource)
-          throw new Error("Invalid remote resource: with data");
-
-        if(!('attributes' in remoteResource))
-          throw new Error("Invalid remote resource: without attributes");
-
-        localResource._rev = remoteResource.attributes.rev;
-
-        if(localResource.uuid && localResource.uuid != remoteResource.attributes.uuid) {
-          throw new Error("Remote resource uuid mismatch "+localResource.uuid+" with "+remoteResource.attributes.uuid);
-        }
-
-        angular.forEach(remoteResource.attributes, function(value, key) {
-          if(key == "rev")
-            return;
-          localResource[key] = value;
-        });
-      } else {
-        throw new Error("Invalid remote resource");
-      }
-    }
-
-    function uploadDeletedResource(tableName, resource, endpoint) {
-      return doApiResourceUpload(
-        'DELETE',
-        tableName,
-        resource,
-        parseEndpoint(endpoint, resource) + '/' + resource.uuid
-      );
-    }
-
-    function uploadNewResource(tableName, resource, endpoint) {
-      return doApiResourceUpload(
-        'POST',
-        tableName,
-        resource,
-        parseEndpoint(endpoint, resource)
-      );
-    }
-
-    function uploadUpdatedResource(tableName, resource, endpoint) {
-      return doApiResourceUpload(
-        'PATCH',
-        tableName,
-        resource,
-        parseEndpoint(endpoint, resource) + '/' + resource.uuid
-      );
-    }
+    }    
   }
 });
