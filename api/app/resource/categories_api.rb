@@ -10,6 +10,7 @@ module PasswordStorage
             group :attributes, type: Hash do
               requires :uuid, type: String
               optional :rev, type: String
+              optional :special, type: String
               requires :name, type: String
             end
           end
@@ -24,6 +25,7 @@ module PasswordStorage
           category.rev = nil
           category.uuid = attributes[:uuid]
           category.name = attributes[:name]
+          category.special = attributes[:special]
 
           category = category_repository.save(category)
           
@@ -61,6 +63,7 @@ module PasswordStorage
             group :attributes, type: Hash do
               requires :uuid, type: String
               requires :name, type: String
+              optional :special, type: String
             end
           end
         end
@@ -75,6 +78,7 @@ module PasswordStorage
           unless category.nil?
             category.rev = attributes[:rev]
             category.name = attributes[:name]
+            category.special = attributes[:special]
 
             category = category_repository.save(category)
 

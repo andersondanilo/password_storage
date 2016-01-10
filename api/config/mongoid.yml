@@ -3,11 +3,11 @@ development:
     default:
       database: password_storage
       hosts:
-        - password_storage_db:27017
+        - db:27017
 
 test:
   sessions:
     default:
       database: password_storage_test
       hosts:
-        - password_storage_db:27017
+        - db:27017

@@ -14,8 +14,17 @@ define(['app/services/dataService', 'app/services/repositoryService', 'app/servi
     this.logout = logout;
     this.configureSyncronize = configureSyncronize;
 
-    $rootScope.$on('request.unauthorized.invalid_token', function() {
-      invalidToken();
+    angular.forEach([
+      'request.unauthorized.invalid_token',
+      'request.unauthorized.unauthorized'
+    ], function(eventName) {
+      $rootScope.$on(eventName, function(event, retry) {
+        invalidToken().then(function() {
+          retry.resolve();
+        }, function() {
+          retry.reject();
+        });
+      });
     });
 
     var session = dataService.get('session');
@@ -65,39 +74,81 @@ define(['app/services/dataService', 'app/services/repositoryService', 'app/servi
     }
 
     function invalidToken() {
-      session = getSession();
-
-      if(session && session.user && session.user.email) {
-        redoLogin(session.user.email);
-      }
-    }
-
-    function configureSyncronize() {
       return $q(function(resolve, reject) {
-        if(!syncronizeInterval) {
-          syncronizeInterval = setInterval(function() {
-            if(isLogged()) {
-              syncService.syncronize();
-            }
-          }, 15000);
-        }
-        if(isLogged()) {
-          syncService.syncronize().then(function() {
-            resolve();
-          });
+        session = getSession();
+
+        if(session && session.user && session.user.email) {
+          redoLogin(session.user.email).then(resolve, reject);
         } else {
-          resolve();
+          reject();
         }
       });
     }
 
+    var lastSyncRequest = null;
+    var syncronizeEnabled = false;
+
+    function configureSyncronize() {
+      return $q(function(resolve, reject) {
+        syncronizeEnabled = true;
+
+        if(!isLogged())
+          reject();
+
+        if(!lastSyncRequest) {
+          function doSyncRequest() {
+            if(syncronizeEnabled) {
+              lastSyncRequest = syncService.syncronize().then(function() {
+                setTimeout(function() {
+                    doSyncRequest();
+                }, 15000);
+              });
+            }
+          }
+
+          doSyncRequest();
+        }
+
+        lastSyncRequest.then(resolve, reject);
+      });
+    }
+
+    function executeInOrder(promisesFns) {
+      var prevPromise;
+      angular.forEach(promisesFns, function(promiseFn) {
+        if(!prevPromise) {
+          prevPromise = promiseFn();
+        } else {
+          prevPromise = prevPromise.then(promiseFn);
+        }
+      });
+      return prevPromise;
+    }
+
     function beforeLogin() {
       return $q(function(resolve, reject) {
-        configureSyncronize().then(function() {
-          repositoryService.seedDatabase().then(function() {
-            resolve();
-          })
-        });
+        var chain = $q.when();
+        chain = chain.then(repositoryService.clearAllStores);
+        if(!lastSyncRequest) {
+          chain = chain.then(function() {
+            return $q(function(resolve, reject) {
+              resolve();
+            });
+          });
+          chain = chain.then(configureSyncronize);
+        }
+        chain = chain.then($q(function(resolve, reject) {
+          chain = chain.then(function() {
+            return $q(function(resolve, reject) {
+              resolve();
+            });
+          });
+          resolve();
+        }));
+        chain = chain.then(repositoryService.seedDatabase);
+        chain.then(function() {
+          resolve();
+        })
       });
     }
 
@@ -131,12 +182,16 @@ define(['app/services/dataService', 'app/services/repositoryService', 'app/servi
     }
 
     function logout() {
+      syncronizeEnabled = false;
+      lastSyncRequest = null;
       return $q(function(resolve, reject) {
-        repositoryService.clearAllStores().then(function() {
-          repositoryService.seedDatabase();
-          session = null;
-          dataService.remove('session');
-          resolve();
+        syncService.syncronize().then(function() {
+          repositoryService.clearAllStores().then(function() {
+            //repositoryService.seedDatabase();
+            session = null;
+            dataService.remove('session');
+            resolve();
+          });
         });
       });
     }
@@ -159,18 +214,35 @@ define(['app/services/dataService', 'app/services/repositoryService', 'app/servi
         inputPlaceholder: 'Your password'
       });
 
-      passwordPopup.then(function(password) {
-        redoLoginPromise = null;
+      configurePromise(passwordPopup);
 
-        login({
+      function configurePromise(passwordPopup) {
+        passwordPopup.then(function(password) {
+          login({
             'email': session.user.email,
             'password': password,
-        }).then(function(data) {
+          }).then(function(data) {
+            redoLoginPromise = null;
             defer.resolve(data);
-        }, function(data) {
-            defer.reject();
-        }); 
-      });
+          }, function(data) {
+            if(data && ('error' in data) && data.error == 'invalid_grant') {
+              var passwordPopup = $ionicPopup.prompt({
+                title: 'Password Check',
+                template: 'Wrong password, enter your secret password',
+                inputType: 'password',
+                inputPlaceholder: 'Your password'
+              });
+
+              configurePromise(passwordPopup);
+            } else {
+              redoLoginPromise = null;
+              defer.reject();
+            }
+          }); 
+        });
+      }
+
+      return redoLoginPromise;
     }
 
     function getSession() {

@@ -11,6 +11,7 @@ define(['app/services/repositoryService', 'app/repositories/passwordRepository']
     this.byUUID = byUUID;
     this.byIndex = byIndex;
     this.removeByUUID = removeByUUID;
+    this.actives = actives;
 
     function validate(entity) {
       var errors = [];
@@ -63,6 +64,13 @@ define(['app/services/repositoryService', 'app/repositories/passwordRepository']
 
     function all(query) {
       return repositoryService.all('categories', query);
+    }
+
+    function actives() {
+      var categoryFilter = {
+        deleted: {$not: true}
+      };
+      return all(categoryFilter);
     }
 
     function byUUID(uuid) {

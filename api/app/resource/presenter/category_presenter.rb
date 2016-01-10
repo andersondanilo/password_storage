@@ -6,6 +6,7 @@ module PasswordStorage
         expose :uuid
         expose :rev
         expose :name
+        expose :special
 
         def self.type_name
           'categories'

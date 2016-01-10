@@ -8,6 +8,7 @@ module PasswordStorage
       
       field :uuid, type: String
       field :name, type: String
+      field :special, type: String
       field :active, type: Boolean, default: true
 
       belongs_to :user, class_name: User::Infrastruture::UserDocument.name

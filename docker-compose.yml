@@ -11,7 +11,7 @@ api:
     - "9292:9292"
   volumes:
     - ./api:/code
-  command: "rerun puma"
+  command: "./start_dev_server.sh"
   links:
     - db
   environment:

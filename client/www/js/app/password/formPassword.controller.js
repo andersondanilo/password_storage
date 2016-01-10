@@ -24,7 +24,7 @@ define([
       ]
     };
 
-    categoryRepository.all().then(loadCategories);
+    categoryRepository.actives().then(loadCategories);
 
     if($stateParams['password']) {
       vm.isNew = false;

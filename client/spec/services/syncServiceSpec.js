@@ -20,6 +20,8 @@ describe("syncService", function() {
   it("download news contents", function(done) {
     var session, requested;
 
+    fakePasswordRequests($httpBackend);
+
     whenPostCategories($httpBackend);
 
     whenGetCategoriesWithResult($httpBackend);
@@ -42,6 +44,8 @@ describe("syncService", function() {
   it("upload news contents", function(done) {
     var session, requested;
 
+    fakePasswordRequests($httpBackend);
+
     whenPostCategories($httpBackend);
 
     whenGetCategoriesWithNoResult($httpBackend);
@@ -61,6 +65,8 @@ describe("syncService", function() {
     var session, requested;
 
     $httpBackend.flush();
+
+    fakePasswordRequests($httpBackend);
 
     whenPostCategories($httpBackend);
 
@@ -107,6 +113,8 @@ describe("syncService", function() {
     var session, requested;
 
     $httpBackend.flush();
+
+    fakePasswordRequests($httpBackend);
 
     whenPostCategories($httpBackend);
 
@@ -163,6 +171,7 @@ describe("syncService", function() {
 
     var remoteCategories = [];
 
+    fakePasswordRequests($httpBackend);
     whenPostCategories($httpBackend, remoteCategories);
     whenPatchCategories($httpBackend, remoteCategories);
     whenGetCategoriesWithResult($httpBackend, remoteCategories);
@@ -194,6 +203,7 @@ describe("syncService", function() {
 
     var remoteCategories = [];
 
+    fakePasswordRequests($httpBackend);
     whenPostCategories($httpBackend, remoteCategories);
     whenGetCategoriesWithResult($httpBackend, remoteCategories);
 
@@ -220,6 +230,7 @@ describe("syncService", function() {
 
     var remoteCategories = [];
 
+    fakePasswordRequests($httpBackend);
     whenPostCategories($httpBackend, remoteCategories);
     whenGetCategoriesWithResult($httpBackend, remoteCategories);
 

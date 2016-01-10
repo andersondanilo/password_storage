@@ -6,6 +6,7 @@ module PasswordStorage
                       :uuid,
                       :rev,
                       :name,
+                      :special,
                       :user_id
       end
     end

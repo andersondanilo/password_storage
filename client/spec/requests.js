@@ -166,3 +166,151 @@ function whenGetCategoriesWithNoResult($httpBackend) {
       "data": []
     });
 }
+
+
+
+
+
+
+
+function fakePasswordRequests($httpBackend) {
+  var remotePasswords = [];
+
+  whenPostPasswords($httpBackend, remotePasswords);
+  whenPatchPasswords($httpBackend, remotePasswords);
+  whenGetPasswordsWithResult($httpBackend, remotePasswords);
+  whenDeletePassword($httpBackend, remotePasswords);
+}
+
+function whenPostPasswords($httpBackend, remotePasswords) {
+  var expr = /.+\/categories\/(.+)\/passwords/;
+  $httpBackend
+    .whenPOST(expr)
+    .respond(function(method, url, data) {
+      if(!data)
+        throw new Error("No data");
+
+      var attributes = angular.fromJson(data).data.attributes;
+
+      attributes['rev'] = 'test-rev';
+
+      delete attributes['_rev'];
+      delete attributes['_sync_status'];
+
+      var result = {
+        "type": "passwords",
+        "id": attributes.uuid,
+        "attributes": attributes
+      };
+
+      if(remotePasswords) {
+        remotePasswords.push(result);
+      }
+
+      return [200, {
+        "data": result
+      }, {}];
+    });
+}
+
+function whenPatchPasswords($httpBackend, remotePasswords) {
+  var expr = /.+\/categories\/(.+)\/passwords\/(.+)/;
+  $httpBackend
+    .whenPATCH(expr)
+    .respond(function(method, url, data) {
+      if(!data)
+        throw new Error("No data");
+
+      var uuid = expr.exec(url)[2];
+
+      var attributes = angular.fromJson(data).data.attributes;
+
+      var oldPassword = null;
+
+      angular.forEach(remotePasswords, function(auxPassword) {
+        if(auxPassword.id == uuid) {
+          oldPassword = auxPassword;
+        }
+      });
+
+      if(!oldPassword)
+        return [404, {"data": null}, {}];
+
+      attributes['rev'] = 'test-rev';
+
+      delete attributes['_rev'];
+      delete attributes['_sync_status'];
+
+      for(var k in attributes) {
+        oldPassword.attributes[k] = attributes[k];
+      }
+
+      return [200, {
+        "data": oldPassword
+      }, {}];
+    });
+}
+
+function whenGetPasswordsWithResult($httpBackend, data) {
+  if(!data) {
+    data = [
+      {
+        "type": "passwords",
+        "id": "my id",
+        "attributes": {
+          "uuid": "my id",
+          "rev": "rev1",
+          "name": "remote password 1"
+        }
+      }
+    ];
+  }
+
+  var expr = /.+\/categories\/(.+)\/passwords/;
+
+  $httpBackend
+    .whenGET(expr)
+    .respond({
+      "data": data
+    });
+}
+
+function whenDeletePassword($httpBackend, data) {
+  var expr = /.+\/categories\/(.+)\/passwords\/(.+)/;
+
+  $httpBackend
+    .whenDELETE(expr)
+    .respond(function(method, url) {
+
+      var uuid = expr.exec(url)[2];
+      var passwordKey;
+      var password;
+      angular.forEach(data, function(password, key) {
+        if(password.id == uuid) {
+          passwordKey = key;
+        }
+      });
+
+      if(passwordKey >= 0) {
+        password = data.splice(passwordKey, 1)[0];
+
+        return [200, {
+          "data": password
+        }];
+      } else {
+        return [404, {
+          "data": null
+        }];
+      }
+    });
+}
+
+function whenGetPasswordsWithNoResult($httpBackend) {
+  var expr = /.+\/categories\/(.+)\/passwords/;
+
+  $httpBackend
+    .whenGET(expr)
+    .respond({
+      "data": []
+    });
+}

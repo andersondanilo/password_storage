@@ -18,6 +18,7 @@ module PasswordStorage
         entity.rev = document._rev_id
         entity.uuid = document.uuid
         entity.name = document.name
+        entity.special = document.special
         entity.user_id = document.user_id
         entity
       end
@@ -35,6 +36,7 @@ module PasswordStorage
 
         document.uuid = entity.uuid
         document.name = entity.name
+        document.special = entity.special
         document.user_id = entity.user_id
         document
       end
