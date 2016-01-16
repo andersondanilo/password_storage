@@ -16,6 +16,11 @@ api:
     - db
   environment:
     - RACK_ENV=development
+    - MONGO_SERVER=db
+    - MONGO_DATABASE=password_storage
+    - MONGO_PORT=27017
+    - MONGO_USER=""
+    - MONGO_PASSWORD=""
 
 web:
   image: nginx
