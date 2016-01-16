@@ -1,7 +1,7 @@
 #!/bin/sh
 
-git branch -d gh-pages
-git branch -d heroku-master
+git branch -D gh-pages
+git branch -D heroku-master
 
 git branch gh-pages
 git branch heroku-master
