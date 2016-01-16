@@ -7,6 +7,8 @@
     "email": "Email",
     "password": "Password",
     "repeat_password": "Repeat the password",
+    "old_password": "Old password",
+    "new_password": "New password",
     "success": "Success",
     "invalid_password": "Invalid email or password",
     "enter": "Enter",

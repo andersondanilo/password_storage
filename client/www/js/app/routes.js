@@ -29,7 +29,8 @@ define(['app/services/authService'], function() {
         'requireLogin': true,
         'dependencies': ['js/app/password/listPassword.controller.js']
       }))
-      .state('dashboard.edit_password', resolve('/edit_password/:password', 'password/formPassword', {'requireLogin': true}));
+      .state('dashboard.edit_password', resolve('/edit_password/:password', 'password/formPassword', {'requireLogin': true}))
+      .state('dashboard.account_information', resolve('/account_information', 'account/information', {'requireLogin': true}));
   }
 
   function makeEvents($rootScope, $state, authService) {

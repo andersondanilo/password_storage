@@ -47,6 +47,36 @@ module PasswordStorage
           present user, with: resource_presenter
         end
 
+        desc "Update informations"
+        params do
+          group :data, type: Hash do
+            requires :type, type: String, regexp: /^users$/
+            group :attributes, type: Hash do
+              requires :name, type: String
+              requires :old_password, type: String
+              requires :new_password, type: String
+            end
+          end
+        end
+        post "/current/update_informations" do
+          access_token = require_access_token
+          user = user_repository.find(access_token.user_id)
+
+          validator = user_service.make_update_information_validator user, params[:data][:attributes]
+
+          if validator.valid?
+            user.name = params[:data][:attributes][:name]
+            user.password = params[:data][:attributes][:new_password]
+
+            user_repository.save(user)
+
+            present user, with: resource_presenter
+          else
+            status 400
+            present validator, with: validator_presenter
+          end
+        end
+
       end
 
     end

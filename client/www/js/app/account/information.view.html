@@ -1,0 +1,38 @@
+<div ng-controller="InformationController as information">
+  <h2>{{'dashboard.account_information' | i18next}}</h2>
+
+  <div ng-hide="information.loaded">
+    <ion-spinner></ion-spinner>
+  </div>
+
+  <form ng-submit="information.save()" ng-show="information.loaded">
+    <div class="list">
+      <label class="item item-input">
+        <span class="input-label">{{'name' | i18next}}</span>
+        <input type="text" ng-model="information.entity.name" />
+      </label>
+      <label class="item item-input">
+        <span class="input-label">{{'old_password' | i18next}}</span>
+        <input type="password" ng-model="information.entity.old_password" />
+      </label>
+      <label class="item item-input">
+        <span class="input-label">{{'new_password' | i18next}}</span>
+        <input type="password" ng-model="information.entity.new_password" />
+      </label>
+      <label class="item item-input">
+        <span class="input-label">{{'repeat_password' | i18next}}</span>
+        <input type="password" ng-model="information.entity.repeat_password" />
+      </label>
+    </div>
+
+    <div>
+      <div class="alert alert-success" ng-class="{hide: !information.successMessage}" ng-bind-html="information.successMessage"></div>
+
+      <div class="alert alert-danger" ng-class="{hide: !information.errorMessage}" ng-bind-html="information.errorMessage"></div>
+
+      <button type="submit" class="button button-balanced button-block">
+        {{'save' | i18next}}
+      </button>
+    </div>
+  </form>
+</div>

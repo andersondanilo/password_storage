@@ -17,9 +17,7 @@ define(['app/repositories/categoryRepository', 'app/services/authService'], func
 
     refreshCategoriesList();
 
-    $rootScope.$on('database.categories.insert', refreshCategoriesList);
-    $rootScope.$on('database.categories.update', refreshCategoriesList);
-    $rootScope.$on('database.categories.delete', refreshCategoriesList);
+    $rootScope.$on('database.categories.change', refreshCategoriesList);
 
     function logout() {
       authService.logout().then(function() {

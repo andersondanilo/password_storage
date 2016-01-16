@@ -294,6 +294,8 @@ define([], function () {
             }
 
             request.onsuccess = function() {
+              $rootScope.$broadcast('database.change', entity);
+              $rootScope.$broadcast('database.'+type+'.change', entity);
               if(!exist) {
                 $rootScope.$broadcast('database.'+type+'.insert', entity);
               } else {
