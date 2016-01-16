@@ -44,7 +44,7 @@ define([], function() {
     // Please close your eyes and do not look at the line below
     var basicAuthentication = 'cGFzc3dvcmRzdG9yYWdlX2FwcDo3YWE1YjJiODUwZTI2N2U5ZmY5Njg5ZDVjZjU0OTFlZmM1MzA2Mjdi';
     var clientSalt = "3dvcmRzdG9yYWdlX";
-    var apiHost = 'http://127.0.0.1:9292/api/v1';
+    var apiHost = 'https://password-storage-api.herokuapp.com/api/v1';
 
     app.register.value('apiHost', apiHost);
     app.register.value('clientId', clientId);
