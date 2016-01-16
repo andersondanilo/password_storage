@@ -4,9 +4,8 @@ production:
       database: <%= ENV['MONGO_DATABASE'] %>
       hosts:
         - <%= ENV['MONGO_SERVER'] %>:<%= ENV['MONGO_PORT'] %>
-      options:
-        user: '<%= ENV['MONGO_USER'] %>'
-        password: '<%= ENV['MONGO_PASSWORD'] %>'
+      username: '<%= ENV['MONGO_USER'] %>'
+      password: '<%= ENV['MONGO_PASSWORD'] %>'
 
 development:
   sessions:
