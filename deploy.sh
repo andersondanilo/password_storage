@@ -5,7 +5,7 @@ git checkout master
 git branch -D gh-pages
 git checkout gh-pages-production
 git branch gh-pages
-git filter-branch -f --subdirectory-filter client -- gh-pages
+git filter-branch -f --subdirectory-filter client/www -- gh-pages
 
 git checkout master
 git branch -D heroku-master
