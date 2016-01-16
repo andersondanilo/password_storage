@@ -2,10 +2,11 @@ production:
   sessions:
     default:
       database: <%= ENV['MONGO_DATABASE'] %>
-      username: '<%= ENV['MONGO_USER'] %>'
-      password: '<%= ENV['MONGO_PASSWORD'] %>'
       hosts:
         - <%= ENV['MONGO_SERVER'] %>:<%= ENV['MONGO_PORT'] %>
+      options:
+        user: '<%= ENV['MONGO_USER'] %>'
+        password: '<%= ENV['MONGO_PASSWORD'] %>'
 
 development:
   sessions:
