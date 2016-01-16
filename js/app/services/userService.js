@@ -1,15 +1,17 @@
 'use strict';
 
-define(['app/services/authService'], function () {
+define(['app/services/apiService'], function () {
   var app = require('app');
 
   app.register.service(
     'userService',
-    ['$http', '$q', 'authService', 'apiHost', 'clientId', 'basicAuthentication', UserService]
+    ['$http', '$q', 'apiService', UserService]
   );
 
-  function UserService($http, $q, authService, apiHost, clientId, basicAuthentication) {
+  function UserService($http, $q, apiService) {
     this.register = register;
+    this.current = current;
+    this.updateInformations = updateInformations;
 
     /**
      * Register a new user
@@ -17,31 +19,37 @@ define(['app/services/authService'], function () {
      * @return {promise}
      */
     function register(input) {
-      var deferred = $q.defer();
-
-      $http({
-        method: 'POST',
-        url: apiHost + '/users',
-        headers: {
-          'Authorization': "Basic "+basicAuthentication
-        },
-        data: {
-          'data': {
-            'type': "users",
-            'attributes': {
-              'name': input.name,
-              'email': input.email,
-              'password': input.password
-            }
+      return apiService.doApiRequestBasic('POST', 'users', {
+        'data': {
+          'type': "users",
+          'attributes': {
+            'name': input.name,
+            'email': input.email,
+            'password': input.password
           }
         }
-      }).success(function(data) {
-        deferred.resolve(data);
-      }).error(function(data) {
-        deferred.reject(data);
-      }); 
+      });
+    }
 
-      return deferred.promise;
+    function updateInformations(input) {
+      return apiService.doApiRequest('POST', 'users/current/update_informations', {
+        'data': {
+          'type': "users",
+          'attributes': {
+            'name': input.name,
+            'old_password': input.old_password,
+            'new_password': input.new_password
+          }
+        }
+      });
+    }
+
+    /**
+     * Return information about current user
+     * @return {promise}
+     */
+    function current() {
+      return apiService.doApiRequest('GET', 'users/current');
     }
   }
 });

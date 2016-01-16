@@ -1,14 +1,34 @@
 'use strict';
 
-define([], function () {
+define(['app/services/dataService'], function () {
   var app = require('app');
 
-  app.register.service('apiService', ['$http', '$q', '$rootScope', 'apiHost', 'dataService', ApiService]);
+  app.register.service('apiService', ['$http', '$q', '$rootScope', 'apiHost', 'dataService', 'basicAuthentication', ApiService]);
 
-  function ApiService($http, $q, $rootScope, apiHost, dataService) {
+  function ApiService($http, $q, $rootScope, apiHost, dataService, basicAuthentication) {
     this.doApiRequest = doApiRequest;
+    this.doApiRequestBasic = doApiRequestBasic;
 
     function doApiRequest(method, endpoint, data) {
+      var session = dataService.get('session');
+      return doApiRequestWithAuthorization(
+        method,
+        endpoint,
+        data,
+        "Bearer "+session["access_token"]
+      );
+    }
+
+    function doApiRequestBasic(method, endpoint, data) {
+      return doApiRequestWithAuthorization(
+        method,
+        endpoint,
+        data,
+        "Basic "+basicAuthentication
+      );
+    }
+
+    function doApiRequestWithAuthorization(method, endpoint, data, authorization) {
       return $q(function(resolve, reject) {
         var retry = $q.defer();
 
@@ -17,13 +37,11 @@ define([], function () {
         doRequest();
 
         function doRequest() {
-          var session = dataService.get('session');
-
           $http({
             method: method,
             url: apiHost + '/' + endpoint,
             headers: {
-              'Authorization': "Bearer "+session["access_token"],
+              'Authorization': authorization,
               'Content-Type': 'application/json',
             },
             data: data
@@ -37,7 +55,7 @@ define([], function () {
                 $rootScope.$broadcast('request.unauthorized.other', retry, response.data);
               }
             } else {
-              reject(response);
+              reject(response.data);
             }
           });
         };

@@ -25,10 +25,11 @@
         <div class="item item-divider">
           {{'dashboard.options' | i18next}}
         </div>
-        <a class="item item-icon-left" href="#">
+        <a class="item item-icon-left" ui-sref="dashboard.account_information">
           <i class="icon ion-person"></i>
           {{'dashboard.account_information' | i18next}}
         </a>
+        <!--
         <a class="item item-icon-left" href="#">
           <i class="icon ion-android-time"></i>
           {{'dashboard.access_history' | i18next}}
@@ -37,17 +38,19 @@
           <i class="icon ion-gear-b"></i>
           {{'dashboard.configuration' | i18next}}
         </a>
-
+        -->
       </div>
     </ion-content>
     <div class="menu-footer">
       <div class="row">
-        <a href="#" class="col">
+        <a href="#" class="col" ui-sref="dashboard.account_information">
           <i class="icon ion-person"></i>
         </a>
+        <!--
         <a href="#" class="col">
           <i class="icon ion-help"></i>
         </a>
+        -->
         <a class="col" ng-click="dashboard.logout()">
           <i class="icon ion-power"></i>
         </a>

@@ -19,6 +19,9 @@ define(['app/services/apiService'], function () {
             "endpoint": "categories/:uuid/passwords",
             "translate": {
               "category_uuid": "category"
+            },
+            "query": function(parentResource) {
+              return {'category': parentResource.uuid};
             }
           }
         }
@@ -71,6 +74,12 @@ define(['app/services/apiService'], function () {
 
     function syncronizeTable(tableName, endpoint, parentResource, options) {
       var getLocalResouces = function(query) {
+        query = query || {};
+        if("query" in options) {
+          angular.forEach(options.query(parentResource), function(value, key) {
+            query[key] = value;
+          });
+        }
         return getLocalResoucesByTable(tableName, query);
       };
 

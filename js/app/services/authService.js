@@ -1,11 +1,11 @@
 'use strict';
 
-define(['app/services/dataService', 'app/services/repositoryService', 'app/services/syncService'], function () {
+define(['app/services/dataService', 'app/services/repositoryService', 'app/services/syncService', 'app/services/userService'], function () {
   var app = require('app');
 
-  app.register.service('authService', ['$http', '$q', '$ionicPopup', '$rootScope', 'apiHost', 'dataService', 'repositoryService', 'syncService', 'clientId', 'basicAuthentication', AuthService]);
+  app.register.service('authService', ['$http', '$q', '$ionicPopup', '$rootScope', 'apiService', 'dataService', 'repositoryService', 'syncService', 'clientId', 'basicAuthentication', 'userService', AuthService]);
 
-  function AuthService($http, $q, $ionicPopup, $rootScope, apiHost, dataService, repositoryService, syncService, clientId, basicAuthentication) {
+  function AuthService($http, $q, $ionicPopup, $rootScope, apiService, dataService, repositoryService, syncService, clientId, basicAuthentication, userService) {
     this.isLogged = isLogged;
     this.login = login;
     this.loginUsingAccessToken = loginUsingAccessToken;
@@ -39,19 +39,12 @@ define(['app/services/dataService', 'app/services/repositoryService', 'app/servi
     function login(input) {
       var deferred = $q.defer();
 
-      $http({
-        method: 'POST',
-        url: apiHost + '/authentication/token',
-        headers: {
-          'Authorization': "Basic "+basicAuthentication
-        },
-        data: {
-          'username': input.email,
-          'password': input.password,
-          'grant_type': 'password',
-          'client_id': clientId
-        }
-      }).success(function(data) {
+      apiService.doApiRequestBasic('POST', 'authentication/token', {
+        'username': input.email,
+        'password': input.password,
+        'grant_type': 'password',
+        'client_id': clientId
+      }).then(function(data) {
         loginUsingAccessToken({
           'access_token': data.access_token,
           'refresh_token': data.refresh_token,
@@ -60,7 +53,7 @@ define(['app/services/dataService', 'app/services/repositoryService', 'app/servi
         }, function(data) {
           deferred.reject(data);
         });
-      }).error(function(data) {
+      }, function(data) {
         deferred.reject(data);
       });
 
@@ -86,6 +79,7 @@ define(['app/services/dataService', 'app/services/repositoryService', 'app/servi
     }
 
     var lastSyncRequest = null;
+    var timeoutSyncRequest = null;
     var syncronizeEnabled = false;
 
     function configureSyncronize() {
@@ -95,18 +89,37 @@ define(['app/services/dataService', 'app/services/repositoryService', 'app/servi
         if(!isLogged())
           reject();
 
+
         if(!lastSyncRequest) {
           function doSyncRequest() {
             if(syncronizeEnabled) {
               lastSyncRequest = syncService.syncronize().then(function() {
-                setTimeout(function() {
-                    doSyncRequest();
-                }, 15000);
+                timeoutSyncRequest = setTimeout(function() {
+                  doSyncRequest();
+                }, 60 * 1000);
               });
             }
           }
 
+          var timeoutDoSyncRequestWithDebounce;
+
+          function doSyncRequestWithDebounce() {
+            if(timeoutSyncRequest)
+              clearTimeout(timeoutSyncRequest);
+
+            if(timeoutDoSyncRequestWithDebounce)
+              clearTimeout(timeoutDoSyncRequestWithDebounce);
+
+            timeoutDoSyncRequestWithDebounce = setTimeout(function() {
+              doSyncRequest();
+            }, 500);
+          }
+
           doSyncRequest();
+
+          $rootScope.$on('database.change', function() {
+            doSyncRequestWithDebounce();
+          });
         }
 
         lastSyncRequest.then(resolve, reject);
@@ -128,23 +141,10 @@ define(['app/services/dataService', 'app/services/repositoryService', 'app/servi
     function beforeLogin() {
       return $q(function(resolve, reject) {
         var chain = $q.when();
-        chain = chain.then(repositoryService.clearAllStores);
         if(!lastSyncRequest) {
-          chain = chain.then(function() {
-            return $q(function(resolve, reject) {
-              resolve();
-            });
-          });
+          chain = chain.then(repositoryService.clearAllStores);
           chain = chain.then(configureSyncronize);
         }
-        chain = chain.then($q(function(resolve, reject) {
-          chain = chain.then(function() {
-            return $q(function(resolve, reject) {
-              resolve();
-            });
-          });
-          resolve();
-        }));
         chain = chain.then(repositoryService.seedDatabase);
         chain.then(function() {
           resolve();
@@ -155,26 +155,23 @@ define(['app/services/dataService', 'app/services/repositoryService', 'app/servi
     function loginUsingAccessToken(accessToken) {
       var deferred = $q.defer();
 
-      $http({
-        method: 'GET',
-        url: apiHost + '/users/current',
-        headers: {
-          'Authorization': "Bearer "+accessToken['access_token']
-        }
-      }).success(function(user_data) {
-        session = {
-          'access_token': accessToken['access_token'],
-          'refresh_token': accessToken['refresh_token'] || null,
-          'salt': user_data.data.attributes.salt,
-          'user': user_data.data.attributes
-        };
+      session = {
+        'access_token': accessToken['access_token'],
+        'refresh_token': accessToken['refresh_token'] || null,
+      };
+
+      dataService.set('session', session);
+
+      userService.current().then(function(user_data) {
+        session['salt'] = user_data.data.attributes.salt;
+        session['user'] = user_data.data.attributes;
 
         dataService.set('session', session);
 
         beforeLogin().then(function() {
           deferred.resolve(user_data);
         });
-      }).error(function(data) {
+      }, function(data) {
         deferred.reject(data);
       });
 
