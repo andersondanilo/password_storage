@@ -10,9 +10,9 @@ production:
 development:
   sessions:
     default:
-      database: <%= ENV['MONGO_DATABASE'] %>
+      database: password_storage
       hosts:
-        - <%= ENV['MONGO_SERVER'] %>:<%= ENV['MONGO_PORT'] %>
+        - db:27017
 
 test:
   sessions:
