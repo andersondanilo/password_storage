@@ -1,4 +1,4 @@
-'use strict';
+
 
 define(['app/services/repositoryService', 'app/repositories/passwordRepository'], function () {
   var app = require('app');

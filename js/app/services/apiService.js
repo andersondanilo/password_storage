@@ -1,4 +1,4 @@
-'use strict';
+
 
 define(['app/services/dataService'], function () {
   var app = require('app');

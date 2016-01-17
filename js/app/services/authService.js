@@ -1,4 +1,4 @@
-'use strict';
+
 
 define(['app/services/dataService', 'app/services/repositoryService', 'app/services/syncService', 'app/services/userService'], function () {
   var app = require('app');

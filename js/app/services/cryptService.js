@@ -1,4 +1,4 @@
-'use strict';
+
 
 define(['app/services/authService'], function () {
   var app = require('app');
