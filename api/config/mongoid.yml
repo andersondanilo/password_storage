@@ -1,5 +1,5 @@
 production:
-  sessions:
+  clients:
     default:
       database: <%= ENV['MONGO_DATABASE'] %>
       hosts:
@@ -9,14 +9,14 @@ production:
         password: '<%= ENV['MONGO_PASSWORD'] %>'
 
 development:
-  sessions:
+  clients:
     default:
-      database: <%= ENV['MONGO_DATABASE'] %>
+      database: password_storage
       hosts:
-        - <%= ENV['MONGO_SERVER'] %>:<%= ENV['MONGO_PORT'] %>
+        - db:27017
 
 test:
-  sessions:
+  clients:
     default:
       database: password_storage_test
       hosts:
