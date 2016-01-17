@@ -1,4 +1,4 @@
-'use strict';
+
 
 define(['app/services/apiService'], function () {
   var app = require('app');
