@@ -4,6 +4,7 @@ git checkout master
 
 git branch -D gh-pages
 git checkout gh-pages-production
+git merge master
 git branch gh-pages
 git filter-branch -f --subdirectory-filter client/www -- gh-pages
 
