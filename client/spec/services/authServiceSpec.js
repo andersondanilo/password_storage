@@ -21,6 +21,12 @@ describe("authService", function() {
     whenPostCategories($httpBackend, remoteCategories);
     whenGetCategoriesWithResult($httpBackend, remoteCategories);
 
+    fakePasswordRequests($httpBackend);
+
+    whenPostCategories($httpBackend);
+
+    whenGetCategoriesWithNoResult($httpBackend);
+
     $httpBackend
       .whenGET(requestBaseUrl + '/users/current')
       .respond({

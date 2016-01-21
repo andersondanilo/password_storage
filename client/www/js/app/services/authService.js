@@ -89,7 +89,6 @@ define(['app/services/dataService', 'app/services/repositoryService', 'app/servi
         if(!isLogged())
           reject();
 
-
         if(!lastSyncRequest) {
           function doSyncRequest() {
             if(syncronizeEnabled) {
@@ -117,8 +116,10 @@ define(['app/services/dataService', 'app/services/repositoryService', 'app/servi
 
           doSyncRequest();
 
-          $rootScope.$on('database.change', function() {
-            doSyncRequestWithDebounce();
+          $rootScope.$on('database.change', function(event, entity, fromSync) {
+            if(!fromSync) {
+              doSyncRequestWithDebounce();
+            }
           });
         }
 
@@ -182,14 +183,14 @@ define(['app/services/dataService', 'app/services/repositoryService', 'app/servi
       syncronizeEnabled = false;
       lastSyncRequest = null;
       return $q(function(resolve, reject) {
-        syncService.syncronize().then(function() {
+        //syncService.syncronize().then(function() {
           repositoryService.clearAllStores().then(function() {
             //repositoryService.seedDatabase();
             session = null;
             dataService.remove('session');
             resolve();
           });
-        });
+        //});
       });
     }
 
