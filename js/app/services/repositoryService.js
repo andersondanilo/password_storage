@@ -249,7 +249,8 @@ define([], function () {
       );
     }
 
-    function save(type, entity) {
+    function save(type, entity, fromSync) {
+      fromSync = fromSync || false;
       return $q(function(resolve, reject) {
         if(entity.uuid) {
           byUUID(type, entity.uuid).then(function(result) {
@@ -294,12 +295,12 @@ define([], function () {
             }
 
             request.onsuccess = function() {
-              $rootScope.$broadcast('database.change', entity);
-              $rootScope.$broadcast('database.'+type+'.change', entity);
+              $rootScope.$broadcast('database.change', entity, fromSync);
+              $rootScope.$broadcast('database.'+type+'.change', entity, fromSync);
               if(!exist) {
-                $rootScope.$broadcast('database.'+type+'.insert', entity);
+                $rootScope.$broadcast('database.'+type+'.insert', entity, fromSync);
               } else {
-                $rootScope.$broadcast('database.'+type+'.update', entity);
+                $rootScope.$broadcast('database.'+type+'.update', entity, fromSync);
               }
               resolve(entity);
             };
