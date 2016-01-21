@@ -134,7 +134,7 @@ define(['app/services/apiService'], function () {
       // update, create or delete local resource
       var syncWithRemoteResources = function() {
         return $q(function(resolve, reject) {
-          var promises = [];
+          var chain = $q.when();
 
           $q.all([
             getLocalResouces({deleted: {$not: true}}),
@@ -154,7 +154,9 @@ define(['app/services/apiService'], function () {
                 localResource.deleted = true;
                 localResource._sync_status = SYNC_OK;
                 localResource._dont_change_sync_status = 1;
-                promises.push(repositoryService.save(tableName, localResource));
+                chain = chain.then(function() {
+                  return repositoryService.save(tableName, localResource, true);
+                });
               }
             });
 
@@ -168,29 +170,16 @@ define(['app/services/apiService'], function () {
 
               if(!localResource.uuid || localResource._rev != remoteResource.attributes.rev) {
                 refreshResourceFromRemote(localResource, remoteResource);
-                promises.push(repositoryService.save(tableName, localResource));
+                chain = chain.then(function() {
+                  return repositoryService.save(tableName, localResource, true);
+                });
               }
             });
 
-            if(promises.length > 0)
-              $q.all(promises).then(resolve);
-            else
-              resolve();
+            chain.then(resolve);
           });
         });
       };
-
-      function executeInOrder(promisesFns) {
-        var prevPromise;
-        angular.forEach(promisesFns, function(promiseFn) {
-          if(!prevPromise) {
-            prevPromise = promiseFn();
-          } else {
-            prevPromise = prevPromise.then(promiseFn);
-          }
-        });
-        return prevPromise;
-      }
 
       function parseEndpoint(endpoint, resource) {
         if(parentResource) {
@@ -221,7 +210,7 @@ define(['app/services/apiService'], function () {
           ).then(function(response) {
             // refresh sync status
             refreshResourceFromRemote(resource, response.data);
-            repositoryService.save(tableName, resource).then(resolve);
+            repositoryService.save(tableName, resource, true).then(resolve);
           }, function(response) {
             if(method == 'DELETE') {
               if(response && response.status == 404) {
@@ -301,12 +290,14 @@ define(['app/services/apiService'], function () {
         );
       }
 
-      return executeInOrder([
-        syncLocalDeleteds,
-        syncLocalNews,
-        syncLocalUpdateds,
-        syncWithRemoteResources
-      ]);
+      var chain = $q.when();
+
+      chain = chain.then(syncLocalDeleteds);
+      chain = chain.then(syncLocalNews);
+      chain = chain.then(syncLocalUpdateds);
+      chain = chain.then(syncWithRemoteResources);
+
+      return chain;
     }    
   }
 });

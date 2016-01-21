@@ -13,8 +13,6 @@ describe("syncService", function() {
     mockRequests($httpBackend);
 
     autoDigest($rootScope, $httpBackend);
-
-    repositoryService.seedDatabase();
   }));
 
   it("download news contents", function(done) {
@@ -26,18 +24,20 @@ describe("syncService", function() {
 
     whenGetCategoriesWithResult($httpBackend);
 
-    syncService.syncronize().then(function() {
-      repositoryService.all('categories').then(function(categories) {
-        expect(categories.length).toEqual(2);
+    repositoryService.seedDatabase().then(function() {
+      syncService.syncronize().then(function() {
+        repositoryService.all('categories').then(function(categories) {
+          expect(categories.length).toEqual(2);
 
-        expect(categories[0].deleted).toEqual(true);
+          expect(categories[0].deleted).toEqual(true);
 
-        expect(categories[1].name).toEqual("remote category 1");
-        expect(categories[1].uuid).toEqual("my id");
-        expect(categories[1]._rev).toEqual("rev1");
-        done();
-      });
-    });    
+          expect(categories[1].name).toEqual("remote category 1");
+          expect(categories[1].uuid).toEqual("my id");
+          expect(categories[1]._rev).toEqual("rev1");
+          done();
+        });
+      });    
+    });
   });
 
 
@@ -50,15 +50,17 @@ describe("syncService", function() {
 
     whenGetCategoriesWithNoResult($httpBackend);
 
-    syncService.syncronize().then(function() {
-      repositoryService.all('categories').then(function(categories) {
-        expect(categories.length).toEqual(1);
-        expect(categories[0].name).toEqual("Default");
-        expect(categories[0]._sync_status).toEqual(1);
-        expect(categories[0]._rev).toEqual("test-rev");
-        done();
+    repositoryService.seedDatabase().then(function() {
+      syncService.syncronize().then(function() {
+        repositoryService.all('categories').then(function(categories) {
+          expect(categories.length).toEqual(1);
+          expect(categories[0].name).toEqual("Default");
+          expect(categories[0]._sync_status).toEqual(1);
+          expect(categories[0]._rev).toEqual("test-rev");
+          done();
+        });
       });
-    });    
+    });
   });
 
   it("delete local content that are deleted remote", function(done) {
@@ -84,28 +86,30 @@ describe("syncService", function() {
 
     whenGetCategoriesWithResult($httpBackend, data);
 
-    syncService.syncronize().then(function() {
-      repositoryService.all('categories').then(function(categories) {
-        expect(categories.length).toEqual(2);
-        expect(categories[1].name).toEqual("remote category temporary");
-        expect(categories[1].uuid).toEqual("my id");
-        expect(categories[1]._rev).toEqual("rev1");
+    repositoryService.seedDatabase().then(function() {
+      syncService.syncronize().then(function() {
+        repositoryService.all('categories').then(function(categories) {
+          expect(categories.length).toEqual(2);
+          expect(categories[1].name).toEqual("remote category temporary");
+          expect(categories[1].uuid).toEqual("my id");
+          expect(categories[1]._rev).toEqual("rev1");
 
-        data.splice(0,1);
+          data.splice(0,1);
 
-        syncService.syncronize().then(function() {
-          repositoryService.all('categories').then(function(categories) {
-            expect(categories.length).toEqual(2);
-            expect(categories[1].name).toEqual("remote category temporary");
-            expect(categories[1].uuid).toEqual("my id");
-            expect(categories[1]._rev).toEqual("rev1");
-            expect(categories[1].deleted).toEqual(true);
+          syncService.syncronize().then(function() {
+            repositoryService.all('categories').then(function(categories) {
+              expect(categories.length).toEqual(2);
+              expect(categories[1].name).toEqual("remote category temporary");
+              expect(categories[1].uuid).toEqual("my id");
+              expect(categories[1]._rev).toEqual("rev1");
+              expect(categories[1].deleted).toEqual(true);
 
-            done();
+              done();
+            });
           });
         });
-      });
 
+      });
     });
   });
 
@@ -132,37 +136,39 @@ describe("syncService", function() {
 
     whenGetCategoriesWithResult($httpBackend, data);
 
-    syncService.syncronize().then(function() {
-      repositoryService.all('categories').then(function(categories) {
-        expect(categories.length).toEqual(2);
-        expect(categories[1].name).toEqual("remote category temporary");
-        expect(categories[1].uuid).toEqual("my id");
-        expect(categories[1]._rev).toEqual("rev1");
+    repositoryService.seedDatabase().then(function() {
+      syncService.syncronize().then(function() {
+        repositoryService.all('categories').then(function(categories) {
+          expect(categories.length).toEqual(2);
+          expect(categories[1].name).toEqual("remote category temporary");
+          expect(categories[1].uuid).toEqual("my id");
+          expect(categories[1]._rev).toEqual("rev1");
 
-        // delete local
-        categories[1].deleted = true;
+          // delete local
+          categories[1].deleted = true;
 
-        repositoryService.save('categories', categories[1]).then(function() {
+          repositoryService.save('categories', categories[1]).then(function() {
 
-          whenDeleteCategory($httpBackend, data);
+            whenDeleteCategory($httpBackend, data);
 
-          syncService.syncronize().then(function() {
-            repositoryService.all('categories').then(function(categories) {
-              expect(categories.length).toEqual(2);
-              expect(categories[1].name).toEqual("remote category temporary");
-              expect(categories[1].uuid).toEqual("my id");
-              expect(categories[1]._rev).toEqual("rev1");
-              expect(categories[1].deleted).toEqual(true);
+            syncService.syncronize().then(function() {
+              repositoryService.all('categories').then(function(categories) {
+                expect(categories.length).toEqual(2);
+                expect(categories[1].name).toEqual("remote category temporary");
+                expect(categories[1].uuid).toEqual("my id");
+                expect(categories[1]._rev).toEqual("rev1");
+                expect(categories[1].deleted).toEqual(true);
 
-              expect(data.length).toEqual(0);
+                expect(data.length).toEqual(0);
 
-              done();
+                done();
+              });
             });
+
           });
-
         });
-      });
 
+      });
     });
   });
 
@@ -177,25 +183,27 @@ describe("syncService", function() {
     whenGetCategoriesWithResult($httpBackend, remoteCategories);
     whenDeleteCategory($httpBackend, remoteCategories);
 
-    syncService.syncronize().then(function() {
-      expect(remoteCategories.length).toEqual(1);
+    repositoryService.seedDatabase().then(function() {
+      syncService.syncronize().then(function() {
+        expect(remoteCategories.length).toEqual(1);
 
-      var remoteCategory = remoteCategories[0];
-      var newName = remoteCategory.attributes.name + ' new name';
+        var remoteCategory = remoteCategories[0];
+        var newName = remoteCategory.attributes.name + ' new name';
 
-      repositoryService.byUUID('categories', remoteCategory.id).then(function(localCategory) {
-        localCategory.name = newName;
+        repositoryService.byUUID('categories', remoteCategory.id).then(function(localCategory) {
+          localCategory.name = newName;
 
-        repositoryService.save('categories', localCategory).then(function() {
-          syncService.syncronize().then(function() {
-            expect(remoteCategories.length).toEqual(1);
-            expect(remoteCategory.attributes.name).toEqual(newName);
+          repositoryService.save('categories', localCategory).then(function() {
+            syncService.syncronize().then(function() {
+              expect(remoteCategories.length).toEqual(1);
+              expect(remoteCategory.attributes.name).toEqual(newName);
 
-            done();
+              done();
+            });
           });
         });
-      });
-    });    
+      });    
+    });
   });
 
   it("update local category content with success", function(done) {
@@ -207,22 +215,24 @@ describe("syncService", function() {
     whenPostCategories($httpBackend, remoteCategories);
     whenGetCategoriesWithResult($httpBackend, remoteCategories);
 
-    syncService.syncronize().then(function() {
-      expect(remoteCategories.length).toEqual(1);
-
-      var remoteCategory = remoteCategories[0];
-      var newName = remoteCategory.attributes.name + ' new name';
-      remoteCategory.attributes.name = newName;
-      remoteCategory.attributes.rev = 'rrev2';
-
+    repositoryService.seedDatabase().then(function() {
       syncService.syncronize().then(function() {
-        repositoryService.byUUID('categories', remoteCategory.id).then(function(localCategory) {
-          expect(remoteCategories.length).toEqual(1);
-          expect(localCategory.name).toEqual(newName);
-          done();
+        expect(remoteCategories.length).toEqual(1);
+
+        var remoteCategory = remoteCategories[0];
+        var newName = remoteCategory.attributes.name + ' new name';
+        remoteCategory.attributes.name = newName;
+        remoteCategory.attributes.rev = 'rrev2';
+
+        syncService.syncronize().then(function() {
+          repositoryService.byUUID('categories', remoteCategory.id).then(function(localCategory) {
+            expect(remoteCategories.length).toEqual(1);
+            expect(localCategory.name).toEqual(newName);
+            done();
+          });
         });
       });
-    });    
+    });
   });
 
   it("update local category content only where rev changes", function(done) {
@@ -234,21 +244,23 @@ describe("syncService", function() {
     whenPostCategories($httpBackend, remoteCategories);
     whenGetCategoriesWithResult($httpBackend, remoteCategories);
 
-    syncService.syncronize().then(function() {
-      expect(remoteCategories.length).toEqual(1);
-
-      var remoteCategory = remoteCategories[0];
-      var oldName = remoteCategory.attributes.name;
-      remoteCategory.attributes.name = remoteCategory.attributes.name + ' new name';
-
+    repositoryService.seedDatabase().then(function() {
       syncService.syncronize().then(function() {
-        repositoryService.byUUID('categories', remoteCategory.id).then(function(localCategory) {
-          expect(remoteCategories.length).toEqual(1);
-          expect(localCategory.name).toEqual(oldName);
-          done();
+        expect(remoteCategories.length).toEqual(1);
+
+        var remoteCategory = remoteCategories[0];
+        var oldName = remoteCategory.attributes.name;
+        remoteCategory.attributes.name = remoteCategory.attributes.name + ' new name';
+
+        syncService.syncronize().then(function() {
+          repositoryService.byUUID('categories', remoteCategory.id).then(function(localCategory) {
+            expect(remoteCategories.length).toEqual(1);
+            expect(localCategory.name).toEqual(oldName);
+            done();
+          });
         });
       });
-    });    
+    });
   });
 
 });

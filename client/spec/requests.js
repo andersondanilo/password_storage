@@ -11,7 +11,9 @@ function mockTemplateRequests($httpBackend) {
       'category/formCategory.view.html',
       'dashboard/dashboard.view.html',
       'dashboard/overview.view.html',
-      'default/default.view.html'
+      'default/default.view.html',
+      'default/default.view.html',
+      'account/information.view.html'
     ];
 
     angular.forEach(templates, function(template) {
