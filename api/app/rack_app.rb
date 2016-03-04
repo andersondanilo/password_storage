@@ -16,6 +16,10 @@ module PasswordStorage
           end
         end
 
+        use Rack::Static,
+          :urls => ["/loaderio-2c26843b682c2da3001918c156d98531.txt"],
+          :root => "public"
+
         use Rack::OAuth2::Server::Resource::Bearer, 'Password Storage' do |req|
           access_token = access_token_repository.find_by_token(req.access_token)
           access_token || req.invalid_token!
