@@ -76,7 +76,7 @@ GEM
     password_strength (1.0.2)
       activemodel
     puma (2.15.3)
-    rack (1.6.4)
+    rack (2.0.8)
     rack-accept (0.4.5)
       rack (>= 0.4)
     rack-cors (0.4.0)
