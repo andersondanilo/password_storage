@@ -75,7 +75,7 @@ GEM
     origin (2.1.1)
     password_strength (1.0.2)
       activemodel
-    puma (2.15.3)
+    puma (3.12.4)
     rack (1.6.4)
     rack-accept (0.4.5)
       rack (>= 0.4)
@@ -134,7 +134,7 @@ DEPENDENCIES
   jsondiff
   mongoid (~> 5.0.0)
   password_strength
-  puma (~> 2.15.3)
+  puma (~> 3.12.4)
   rack-cors
   rack-oauth2
   rack-test (~> 0.6.2)
