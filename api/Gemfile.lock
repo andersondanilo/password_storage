@@ -109,10 +109,10 @@ GEM
       rspec-support (~> 3.3.0)
     rspec-support (3.3.0)
     spork (1.0.0rc4)
-    thread_safe (0.3.5)
+    thread_safe (0.3.6)
     timers (4.0.1)
       hitimes
-    tzinfo (1.2.2)
+    tzinfo (1.2.10)
       thread_safe (~> 0.1)
     virtus (1.0.5)
       axiom-types (~> 0.1)
